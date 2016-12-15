@@ -1,4 +1,4 @@
-class IyteHashTable(var allItems:Array[Item],var sizeOfItems:Int,var numberOfItems:Int){
+class IyteHashTable(var items:Array[Item],var itemSize:Int,var itemCount:Int){
 
    def getHashCode(key:String):Int={		
    var code=5381
@@ -11,58 +11,58 @@ class IyteHashTable(var allItems:Array[Item],var sizeOfItems:Int,var numberOfIte
    code%10000000			
  }
 
-  def set(key:String, value:String){
-     val loadFactor=numberOfItems.toFloat / sizeOfItems
-     if(loadFactor > 0.65){										
-       val tempSizeOfItems=sizeOfItems*2
-       var tempAllItems = new Array[Item](tempSizeOfItems)  
-       for(i<-0 to (sizeOfItems-1) ){
-         tempAllItems(i)=allItems(i)
+    def get(key:String):String={
+   try{
+     var getIndex=getHashCode(key)					
+     
+     while(items(getIndex).key != key && getIndex < itemSize){	
+       getIndex=getIndex+1
+       if(getIndex==itemSize){
+       getIndex=0
        }
-       sizeOfItems=tempSizeOfItems
-       allItems=tempAllItems
+     }
+     items(getIndex).value		
+   }
+   catch{
+    case c: Exception => return null	
+   }
+ }  
+   
+  def set(key:String, value:String){
+     val x=itemCount.toFloat / itemSize
+     if(x > 0.65){										
+       val tempitemSize=itemSize*2
+       var tempitems = new Array[Item](tempitemSize)  
+       for(i<-0 to (itemSize-1) ){
+         tempitems(i)=items(i)
+       }
+       itemSize=tempitemSize
+       items=tempitems
      }
 	   val item = new Item(key,value)					
 	   var addedIndex=getHashCode(key)				
-	   while(allItems(addedIndex) != null && addedIndex < sizeOfItems){		
-	     if(allItems(addedIndex).key == key){		
+	   while(items(addedIndex) != null && addedIndex < itemSize){		
+	     if(items(addedIndex).key == key){		
 	       println("Key is already used")
 	       return
 	     }  
 	     addedIndex=addedIndex+1
 			
-	     if(addedIndex==sizeOfItems){	
+	     if(addedIndex==itemSize){	
 	       addedIndex=0
 	     }
 	   }
-     allItems(addedIndex)=item
-     numberOfItems=numberOfItems+1
- }  
-
- def get(key:String):String={
-   try{
-     var getIndex=getHashCode(key)					
-     
-     while(allItems(getIndex).key != key && getIndex < sizeOfItems){	
-       getIndex=getIndex+1
-       if(getIndex==sizeOfItems){
-       getIndex=0
-       }
-     }
-     allItems(getIndex).value		
-   }
-   catch{
-    case e: Exception => return null	
-   }
+     items(addedIndex)=item
+     itemCount=itemCount+1
  }  
 
 }
 object IyteHashTable{
   def apply()={
-    val sizeOfItems=10000000					
-    val allItems=new Array[Item](sizeOfItems)
-    val numberOfItems=0
-    new IyteHashTable(allItems,sizeOfItems,numberOfItems)
+    val itemSize=10000000					
+    val items=new Array[Item](itemSize)
+    val itemCount=0
+    new IyteHashTable(items,itemSize,itemCount)
   }
 }
 
